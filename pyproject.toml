@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opencodeswitch"
+version = "0.1.0"
+description = "ops - switch between multiple OpenCode Zen accounts without losing sessions"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Aliw02" }]
+keywords = ["opencode", "zen", "cli", "accounts"]
+dependencies = []
+
+[project.scripts]
+ops = "ops.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Aliw02/OpencodeSwitch"
+
+[tool.setuptools.packages.find]
+include = ["ops*"]
