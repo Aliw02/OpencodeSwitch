@@ -129,3 +129,33 @@ def test_history_append_and_read(sandbox: Path) -> None:
     rows = store.read_history(10)
     assert [r["action"] for r in rows] == ["rotate", "switch"]
     assert rows[0]["from"] == "a"
+
+
+def test_reads_tolerate_utf8_bom(sandbox: Path) -> None:
+    """PowerShell 5.1 and some editors write a BOM; ops must not crash on it."""
+    (sandbox / "config").mkdir(exist_ok=True)
+    paths.accounts_file().write_bytes(
+        b"\xef\xbb\xbf" + json.dumps({"version": 1, "active": "a", "accounts": [
+            {"name": "a", "key": "k1", "created": "2026-01-01T00:00:00+00:00", "last_used": None}
+        ]}).encode()
+    )
+    st = store.load()
+    assert st.names() == ["a"]
+    assert st.active == "a"
+
+    paths.auth_file().write_bytes(
+        b"\xef\xbb\xbf" + json.dumps({"nvidia": {"type": "api", "key": "nvapi-X"}}).encode()
+    )
+    assert opencode.current_key() is None
+    assert opencode.other_providers() == ["nvidia"]
+
+    paths.history_file().parent.mkdir(parents=True, exist_ok=True)
+    paths.history_file().write_bytes(b"\xef\xbb\xbf" + b'{"at":"t","action":"add","account":"a"}\n')
+    assert store.read_history(5)[0]["action"] == "add"
+
+
+def test_corrupt_auth_json_raises_autherror_not_traceback(sandbox: Path) -> None:
+    paths.auth_file().parent.mkdir(parents=True, exist_ok=True)
+    paths.auth_file().write_text("{not json", encoding="utf-8")
+    with pytest.raises(opencode.AuthError):
+        opencode.read()

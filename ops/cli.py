@@ -9,6 +9,9 @@ from ops import __version__
 from ops import account as account_cmd
 from ops import switch as switch_cmd
 from ops import tools, ui
+from ops.opencode import AuthError
+from ops.store import StoreError
+from ops.zen import ZenError
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,6 +80,12 @@ def main(argv: list[str] | None = None) -> int:
     except KeyboardInterrupt:
         print()
         return 130
+    except (AuthError, StoreError) as exc:
+        ui.fail(str(exc))
+        return 1
+    except ZenError as exc:
+        ui.fail(str(exc))
+        return 2
 
 
 def _dispatch(args: argparse.Namespace) -> int:

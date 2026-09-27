@@ -28,7 +28,8 @@ Python 3.10+, no third-party dependencies.
 ## Usage
 
 ```powershell
-# 1. add accounts (key is validated against Zen before it is stored)
+# 1. add accounts (the key is authenticated against Zen before it is stored,
+#    using an empty completion request that spends no tokens)
 ops account add aliweyabood oc_sk_xxx
 ops account add work                          # prompts for the key, hidden
 
@@ -84,7 +85,7 @@ Copy-Item ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.jso
 ## Safety
 
 - Keys are never printed in full — always `oc_sk_…ABCD`
-- Keys are validated against Zen before being saved
+- Keys are authenticated against Zen before being saved, at zero token cost
 - Writes are atomic (temp file + rename)
 - `auth.json` is backed up before every mutation
 - Refuses to remove the active account without `--force`

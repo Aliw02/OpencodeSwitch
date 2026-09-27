@@ -12,8 +12,11 @@ from pathlib import Path
 # OpenCode provider id for Zen (models are referenced as opencode/<model-id>)
 ZEN_PROVIDER = "opencode"
 
-# Zen public API, used only to validate a key before storing it.
-ZEN_MODELS_URL = "https://opencode.ai/zen/v1/models"
+# Zen public API. /models is fetched without a key (it does not authenticate);
+# /chat/completions is used to prove a key without spending tokens.
+ZEN_API_BASE = "https://opencode.ai/zen/v1"
+ZEN_MODELS_URL = f"{ZEN_API_BASE}/models"
+ZEN_CHAT_URL = f"{ZEN_API_BASE}/chat/completions"
 
 
 def _home() -> Path:

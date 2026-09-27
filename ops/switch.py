@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ops import opencode, store, ui
+from ops import opencode, paths, store, ui
 
 
 def switch(name: str | None, as_json: bool = False) -> int:
@@ -43,7 +43,7 @@ def switch(name: str | None, as_json: bool = False) -> int:
         return 0
 
     ui.ok(f"active account: {ui.bold(acct.name)}")
-    ui.info(f"key {ui.mask_key(acct.key)} written to {opencode.paths.auth_file()}")
+    ui.info(f"key {ui.mask_key(acct.key)} written to {paths.auth_file()}")
     ui.info(f"backup: {backup}")
     if others:
         ui.info(f"untouched providers: {', '.join(others)}")
@@ -72,7 +72,7 @@ def current(as_json: bool = False) -> int:
         return 0
 
     if not key:
-        ui.fail(f"no Zen key in {opencode.paths.auth_file()}")
+        ui.fail(f"no Zen key in {paths.auth_file()}")
         return 1
     ui.ok(f"active: {ui.bold(active_name or '(unknown - key not in store)')}")
     ui.info(f"key in auth.json: {ui.mask_key(key)}")

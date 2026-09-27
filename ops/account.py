@@ -24,13 +24,21 @@ def add(name: str, key: str | None, skip_validate: bool = False) -> int:
         return 1
 
     if not skip_validate:
-        ui.info("validating key against Zen…")
+        ui.info("checking key against Zen (no tokens spent)…")
         try:
-            count = zen.validate_key(key)
+            result = zen.check(key)
         except zen.ZenError as exc:
             ui.fail(str(exc))
             return 2
-        ui.ok(f"key valid - {count} models available")
+        if result.status == "invalid":
+            ui.fail(f"rejected by Zen: {result.detail}")
+            return 1
+        if result.status == "no_access":
+            ui.warn(result.detail)
+        elif result.status == "unverified":
+            ui.warn(f"could not verify: {result.detail}")
+        else:
+            ui.ok(f"key accepted ({result.detail})")
 
     st.add(name, key)
     store.save(st)

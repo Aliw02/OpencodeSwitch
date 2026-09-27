@@ -49,7 +49,7 @@ ops switch --account <name>       Same, scriptable form
 ops current                       Show which account is active + detect drift
 ops rotate                        Round-robin to the next account (the "I hit the limit" button)
 
-ops test [name]                   Probe a key against GET https://opencode.ai/zen/v1/models
+ops test [name]                   Authenticate stored keys (zero tokens)
 ops doctor                        Environment check: python, opencode, paths, all keys
 ops run [--account x] -- <args>   Switch, then exec opencode with your args
 ops history                       Last 20 switches from the audit log          (--json)
@@ -99,11 +99,14 @@ Windows: `~` = `C:\Users\<you>` (not `%APPDATA%`).
 ## 7. Safety rules
 
 1. **Never** print a full key — always `oc_sk_…ABCD` style masking.
-2. **Validate before saving** — `ops account add` calls Zen `/models` first.
+2. **Validate before saving** — `ops account add` proves the key with an empty
+   completion request. Auth runs before payload validation, and `messages: []`
+   never reaches generation, so nothing is billed.
 3. **Atomic writes** — write to `.tmp`, then `os.replace`.
 4. **Backup first** — `auth.json.bak` before any change; `ops doctor` offers restore.
 5. **Refuse** to remove/rename the active account without `--force`.
-6. No network calls except Zen's `/models` endpoint.
+6. No network calls except Zen's `/models` (list) and `/chat/completions`
+   (auth probe with zero tokens).
 
 ## 8. Project structure
 
@@ -149,7 +152,9 @@ ops doctor
 1. `paths.py` — resolve the three file locations, fail loudly if opencode absent
 2. `store.py` — accounts CRUD + atomic write + history append
 3. `opencode.py` — read/write `auth.json` preserving all other providers + backup
-4. `zen.py` — `validate_key()` against `/zen/v1/models`
+4. `zen.py` — `check()` proves a key with `POST /zen/v1/chat/completions`
+   (`messages: []`, zero tokens). `/models` does **not** authenticate: it
+   answers 200 for any request with a custom User-Agent, even unauthenticated.
 5. `ui.py` — table renderer, masked key, colored status, numbered picker
 6. `account.py` → `switch.py` → `tools.py`
 7. `cli.py` + `__main__.py` — wire subcommands

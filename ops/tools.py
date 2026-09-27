@@ -28,12 +28,20 @@ def test(name: str | None) -> int:
     for acct in targets:
         ui.info(f"testing {acct.name}…")
         try:
-            count = zen.validate_key(acct.key)
+            result = zen.check(acct.key)
         except zen.ZenError as exc:
             ui.fail(f"{acct.name}: {exc}")
             failed += 1
             continue
-        ui.ok(f"{acct.name}: valid ({count} models)")
+        if result.status == "invalid":
+            ui.fail(f"{acct.name}: {result.detail}")
+            failed += 1
+        elif result.status == "no_access":
+            ui.warn(f"{acct.name}: {result.detail}")
+        elif result.status == "ok":
+            ui.ok(f"{acct.name}: key accepted")
+        else:
+            ui.warn(f"{acct.name}: {result.detail}")
     return 2 if failed else 0
 
 

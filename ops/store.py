@@ -157,7 +157,7 @@ def load() -> Store:
     if not path.exists():
         return Store()
     try:
-        raw = json.loads(path.read_text(encoding="utf-8"))
+        raw = json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         raise StoreError(f"cannot read {path}: {exc}") from exc
     return Store(
@@ -192,7 +192,7 @@ def read_history(limit: int = 20) -> list[dict[str, Any]]:
     if not path.exists():
         return []
     rows = []
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
         line = line.strip()
         if not line:
             continue

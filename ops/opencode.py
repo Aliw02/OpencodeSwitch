@@ -25,7 +25,8 @@ def read() -> dict[str, Any]:
     if not path.exists():
         return {}
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        # utf-8-sig: some editors (and PowerShell 5.1) write a BOM
+        return json.loads(path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         raise AuthError(f"cannot read {path}: {exc}") from exc
 

@@ -136,3 +136,7 @@ def fail(msg: str) -> None:
 
 def info(msg: str) -> None:
     print(f"{dim(DOT)} {msg}")
+
+
+def warn(msg: str) -> None:
+    print(f"{yellow(WARN)} {msg}")
