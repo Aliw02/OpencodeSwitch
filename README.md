@@ -96,3 +96,6 @@ Copy-Item ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.jso
 pip install -e .[dev]    # or just: pip install pytest
 pytest
 ```
+
+How `ops` proves a Zen key (and why `GET /models` cannot) is written up in
+[`docs/zen-api.md`](docs/zen-api.md).
