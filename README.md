@@ -1,10 +1,15 @@
 # ops — OpenCode Switch
 
+[![CI](https://github.com/Aliw02/OpencodeSwitch/actions/workflows/ci.yml/badge.svg)](https://github.com/Aliw02/OpencodeSwitch/actions/workflows/ci.yml)
+
 Switch between multiple **OpenCode Zen** accounts from your terminal, without
 losing your sessions.
 
 When one Zen account hits its monthly limit, run `ops rotate` and keep working
 in the same conversation.
+
+**Platforms:** Linux, macOS, Windows — Python 3.10+, no third-party
+dependencies. CI runs the suite on all three.
 
 ## Why sessions survive
 
@@ -18,16 +23,36 @@ that file (Nvidia, OpenAI, Modal, …) and every session is left untouched.
 
 ## Install
 
-```powershell
-pipx install -e .        # or: pip install -e .
+```bash
+# Linux / macOS
+pip install git+https://github.com/Aliw02/OpencodeSwitch.git
+# or clone it:
+git clone https://github.com/Aliw02/OpencodeSwitch.git
+cd OpencodeSwitch && pip install -e .
+
 ops doctor
 ```
 
-Python 3.10+, no third-party dependencies.
+```powershell
+# Windows
+git clone https://github.com/Aliw02/OpencodeSwitch.git
+cd OpencodeSwitch
+pip install -e .
+ops doctor
+```
+
+`ops` lands on your PATH as a normal console script. If it does not, your
+`PATH` is missing Python's `Scripts` (Windows) or `bin` (Linux/macOS)
+directory.
+
+Paths follow OpenCode's own xdg-basedir resolution on every platform —
+`~/.local/share/opencode/` and `~/.config/opencode/` on Linux, macOS and
+Windows alike. `OPENCODE_DATA_DIR` / `XDG_DATA_HOME` are honoured the same way
+OpenCode honours them.
 
 ## Usage
 
-```powershell
+```bash
 # 1. add accounts (the key is authenticated against Zen before it is stored,
 #    using an empty completion request that spends no tokens)
 ops account add aliweyabood oc_sk_xxx
@@ -78,8 +103,11 @@ Exit codes: `0` ok · `1` user/config error · `2` network/API error.
 
 Restore a backup manually:
 
+```bash
+cp ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.json   # Linux / macOS
+```
 ```powershell
-Copy-Item ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.json -Force
+Copy-Item ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.json -Force   # Windows
 ```
 
 ## Safety
@@ -92,8 +120,9 @@ Copy-Item ~/.local/share/opencode/auth.json.bak ~/.local/share/opencode/auth.jso
 
 ## Development
 
-```powershell
-pip install -e .[dev]    # or just: pip install pytest
+```bash
+pip install -e .
+pip install pytest
 pytest
 ```
 
